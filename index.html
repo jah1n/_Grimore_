@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Five-Leaf Grimoire // Surpass Your Limits</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cinzel Decorative for Arcane Headers, Inter & JetBrains Mono for UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    :root {
+      /* Default Theme: Asta Anti-Magic (Crimson & Obsidian) */
+      --bg-deep: #060408;
+      --bg-radial: #1a050a;
+      --primary: #e11d48;
+      --primary-bright: #ff003c;
+      --primary-glow: rgba(255, 0, 60, 0.6);
+      --secondary: #f59e0b;
+      --secondary-glow: rgba(245, 158, 11, 0.35);
+      --card-bg: rgba(12, 9, 16, 0.68);
+      --card-border: rgba(225, 29, 72, 0.28);
+      --card-hover-border: rgba(255, 0, 60, 0.9);
+      --text-accent: #ff3366;
+    }
+
+    [data-theme="yuno"] {
+      /* Yuno Wind Spirit Dive Mode (Emerald & Gold Mana) */
+      --bg-deep: #030b08;
+      --bg-radial: #07261c;
+      --primary: #10b981;
+      --primary-bright: #34d399;
+      --primary-glow: rgba(16, 185, 129, 0.55);
+      --secondary: #fbbf24;
+      --secondary-glow: rgba(251, 191, 36, 0.45);
+      --card-bg: rgba(6, 20, 15, 0.68);
+      --card-border: rgba(16, 185, 129, 0.28);
+      --card-hover-border: rgba(251, 191, 36, 0.85);
+      --text-accent: #34d399;
+    }
+
+    [data-theme="yami"] {
+      /* Yami Dark Magic Mode (Void Purple & Silver) */
+      --bg-deep: #06040b;
+      --bg-radial: #180c2e;
+      --primary: #9333ea;
+      --primary-bright: #c084fc;
+      --primary-glow: rgba(147, 51, 234, 0.55);
+      --secondary: #e2e8f0;
+      --secondary-glow: rgba(226, 232, 240, 0.35);
+      --card-bg: rgba(13, 9, 24, 0.72);
+      --card-border: rgba(147, 51, 234, 0.28);
+      --card-hover-border: rgba(192, 132, 252, 0.85);
+      --text-accent: #c084fc;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-deep);
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .font-arcane {
+      font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    }
+
+    .font-cinzel {
+      font-family: 'Cinzel', serif;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Fullscreen Interactive Canvas */
+    #manaCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Vignette & Grimoire Texture Overlay */
+    .grimoire-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 35%, transparent 22%, rgba(5, 4, 8, 0.88) 100%);
+      box-shadow: inset 0 0 140px rgba(0, 0, 0, 0.95);
+    }
+
+    /* Glassmorphic Grimoire Cards */
+    .grimoire-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 12px 35px -8px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+      transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grimoire-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary-bright), var(--secondary), transparent);
+      transition: left 0.55s ease;
+    }
+
+    .grimoire-card:hover::before {
+      left: 100%;
+    }
+
+    .grimoire-card:hover {
+      border-color: var(--card-hover-border);
+      box-shadow: 0 16px 38px -6px var(--primary-glow), 0 0 20px -4px var(--secondary-glow);
+      transform: translateY(-3px);
+    }
+
+    /* Individual URL Link Pill with Anti-Magic Sword Slash Hover */
+    .link-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .link-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(115deg, transparent, var(--primary-glow), rgba(0, 0, 0, 0.8), transparent);
+      transform: skewX(-25deg);
+      transition: left 0.45s ease;
+      pointer-events: none;
+    }
+
+    .link-item:hover::after {
+      left: 140%;
+    }
+
+    .link-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--primary-bright);
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 6px 20px -4px var(--primary-glow);
+    }
+
+    /* Search Bar Glow */
+    .search-grimoire {
+      background: rgba(10, 8, 14, 0.78);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), 0 0 15px -5px var(--primary-glow);
+      transition: all 0.3s ease;
+    }
+
+    .search-grimoire:focus-within {
+      border-color: var(--primary-bright);
+      box-shadow: 0 0 28px -2px var(--primary-glow), 0 0 12px 0px var(--secondary-glow);
+      transform: scale(1.01);
+    }
+
+    /* Five-Leaf Clover Emblem Centerpiece Animations */
+    @keyframes cloverFloat {
+      0%, 100% {
+        transform: translateY(0px) scale(1);
+        filter: drop-shadow(0 0 14px var(--primary-glow));
+      }
+      50% {
+        transform: translateY(-6px) scale(1.05);
+        filter: drop-shadow(0 0 26px var(--primary-glow)) drop-shadow(0 0 12px var(--secondary-glow));
+      }
+    }
+
+    @keyframes runeRingSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes runeRingSpinReverse {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    .clover-emblem-btn {
+      animation: cloverFloat 4s ease-in-out infinite;
+      cursor: pointer;
+    }
+
+    .clover-emblem-btn:active {
+      transform: scale(0.92);
+    }
+
+    .spin-slow {
+      transform-origin: center;
+      animation: runeRingSpin 26s linear infinite;
+    }
+
+    .spin-reverse-slow {
+      transform-origin: center;
+      animation: runeRingSpinReverse 18s linear infinite;
+    }
+
+    /* Dynamic Accent Utilities */
+    .text-mana {
+      color: var(--text-accent);
+    }
+
+    .border-mana {
+      border-color: var(--primary-bright);
+    }
+
+    .bg-mana {
+      background-color: var(--primary);
+    }
+
+    .glow-text {
+      text-shadow: 0 0 20px var(--primary-glow), 0 2px 8px rgba(0, 0, 0, 0.95);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070509;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="relative min-h-screen flex flex-col justify-between p-4 sm:p-6 lg:p-8">
+
+  <!-- Interactive Background Canvas (Rotating Five-Leaf Clover Seal + Rising Sparks + Runes + Slash Trail) -->
+  <canvas id="manaCanvas"></canvas>
+  <div class="grimoire-vignette"></div>
+
+  <!-- TOP NAVIGATION & CONTROLS BAR -->
+  <header class="relative z-10 w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 pb-2">
+    <!-- Left: Grimoire Status Badge -->
+    <div class="flex items-center gap-3 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10">
+      <div class="w-2.5 h-2.5 rounded-full bg-mana animate-ping"></div>
+      <span class="font-cinzel text-xs sm:text-sm tracking-widest uppercase font-bold text-slate-200">
+        Five-Leaf Grimoire <span id="activeThemeLabel" class="text-mana font-mono-code text-xs ml-1">// [ANTI-MAGIC]</span>
+      </span>
+    </div>
+
+    <!-- Right: Mana Theme Switcher, Edit Grimoire, Chrome Setup -->
+    <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+      <!-- 3 Mana Theme Modes -->
+      <div class="flex items-center bg-black/60 backdrop-blur-md p-1 rounded-xl border border-white/10" role="group" aria-label="Mana Theme Mode">
+        <button onclick="setManaTheme('asta')" id="themeBtn-asta" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5" title="Asta's Anti-Magic (Crimson & Obsidian)">
+          <i class="fa-solid fa-fire-flame-curved text-rose-500"></i>
+          <span class="hidden sm:inline">Anti-Magic</span>
+        </button>
+        <button onclick="setManaTheme('yuno')" id="themeBtn-yuno" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5" title="Yuno's Spirit Dive (Emerald & Gold)">
+          <i class="fa-solid fa-wind text-emerald-400"></i>
+          <span class="hidden sm:inline">Spirit Dive</span>
+        </button>
+        <button onclick="setManaTheme('yami')" id="themeBtn-yami" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5" title="Yami's Dark Magic (Void Purple & Silver)">
+          <i class="fa-solid fa-moon text-purple-400"></i>
+          <span class="hidden sm:inline">Dark Magic</span>
+        </button>
+      </div>
+
+      <!-- Edit Grimoire Button -->
+      <button onclick="openModal('editModal')" class="px-3.5 py-2 rounded-xl bg-black/60 hover:bg-white/10 backdrop-blur-md border border-white/15 hover:border-mana text-xs sm:text-sm font-medium text-slate-200 flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-book-skull text-mana"></i>
+        <span>Edit Grimoire</span>
+      </button>
+
+      <!-- Chrome Setup / Download HTML Button -->
+      <button onclick="openModal('setupModal')" class="px-3.5 py-2 rounded-xl bg-black/60 hover:bg-white/10 backdrop-blur-md border border-white/15 hover:border-amber-400/70 text-xs sm:text-sm font-medium text-amber-300 flex items-center gap-2 transition-all" title="How to set as Chrome New Tab">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span class="hidden md:inline">Chrome Setup</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN HERO & DASHBOARD CONTENT (NO CLOCK OR DATE) -->
+  <main class="relative z-10 w-full max-w-7xl mx-auto my-auto py-4 flex flex-col items-center">
+
+    <!-- FIVE-LEAF CLOVER EMBLEM & MOTTO CENTERPIECE -->
+    <section class="text-center mb-6 flex flex-col items-center max-w-3xl w-full">
+      <!-- Interactive Five-Leaf Clover Seal Emblem (Click to unleash Mana Burst) -->
+      <div onclick="triggerManaBurst(true)" class="clover-emblem-btn relative w-28 h-28 sm:w-32 sm:h-32 mb-3 flex items-center justify-center group" title="Click to unleash a Five-Leaf Mana Burst!">
+        <svg viewBox="0 0 200 200" class="w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer Rotating Arcane Ring -->
+          <g class="spin-slow">
+            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.7" />
+            <circle cx="100" cy="100" r="82" fill="none" stroke="var(--secondary)" stroke-width="1" opacity="0.4" />
+            <!-- Pentagram Star Nodes -->
+            <polygon points="100,12 126,178 18,74 182,74 74,178" fill="none" stroke="var(--primary)" stroke-width="0.9" opacity="0.35" />
+          </g>
+
+          <!-- Counter-Rotating Inner Sacred Geometry Ring -->
+          <g class="spin-reverse-slow">
+            <circle cx="100" cy="100" r="68" fill="none" stroke="var(--secondary)" stroke-width="1.4" stroke-dasharray="14 8" opacity="0.65" />
+          </g>
+
+          <!-- Core Obsidian Seal Backdrop -->
+          <circle cx="100" cy="100" r="56" fill="rgba(8, 6, 12, 0.85)" stroke="var(--primary)" stroke-width="2" />
+
+          <!-- Sacred Five-Leaf Clover Geometry (5 Heart-Shaped Leaves at 72° intervals) -->
+          <g transform="translate(100, 100)">
+            <!-- Leaf 1 (Top - The 5th Leaf Where the Devil Resides) -->
+            <g transform="rotate(0)">
+              <path d="M0,0 C-16,-16 -22,-42 -8,-48 C-2,-50 0,-43 0,-40 C0,-43 2,-50 8,-48 C22,-42 16,-16 0,0 Z"
+                    fill="var(--primary)" fill-opacity="0.88" stroke="var(--secondary)" stroke-width="1.4" />
+            </g>
+            <!-- Leaf 2 (72 deg) -->
+            <g transform="rotate(72)">
+              <path d="M0,0 C-16,-16 -22,-42 -8,-48 C-2,-50 0,-43 0,-40 C0,-43 2,-50 8,-48 C22,-42 16,-16 0,0 Z"
+                    fill="#110c18" stroke="var(--primary)" stroke-width="1.8" />
+            </g>
+            <!-- Leaf 3 (144 deg) -->
+            <g transform="rotate(144)">
+              <path d="M0,0 C-16,-16 -22,-42 -8,-48 C-2,-50 0,-43 0,-40 C0,-43 2,-50 8,-48 C22,-42 16,-16 0,0 Z"
+                    fill="#110c18" stroke="var(--primary)" stroke-width="1.8" />
+            </g>
+            <!-- Leaf 4 (216 deg) -->
+            <g transform="rotate(216)">
+              <path d="M0,0 C-16,-16 -22,-42 -8,-48 C-2,-50 0,-43 0,-40 C0,-43 2,-50 8,-48 C22,-42 16,-16 0,0 Z"
+                    fill="#110c18" stroke="var(--primary)" stroke-width="1.8" />
+            </g>
+            <!-- Leaf 5 (288 deg) -->
+            <g transform="rotate(288)">
+              <path d="M0,0 C-16,-16 -22,-42 -8,-48 C-2,-50 0,-43 0,-40 C0,-43 2,-50 8,-48 C22,-42 16,-16 0,0 Z"
+                    fill="#110c18" stroke="var(--primary)" stroke-width="1.8" />
+            </g>
+            <!-- Clover Stem -->
+            <path d="M0,4 Q4,34 12,48" fill="none" stroke="var(--secondary)" stroke-width="2" stroke-linecap="round" />
+            <!-- Glowing Center Core -->
+            <circle cx="0" cy="0" r="6" fill="var(--secondary)" />
+            <circle cx="0" cy="0" r="3" fill="#ffffff" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- Five-Leaf Lore Subtitle -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[11px] font-mono-code uppercase tracking-widest text-amber-300/90 mb-2">
+        <i class="fa-solid fa-sparkles text-mana"></i>
+        <span>Within the Fifth Leaf Resides a Devil</span>
+      </div>
+
+      <!-- Main Motto Heading (No Clock) -->
+      <h1 class="font-arcane text-2xl sm:text-4xl lg:text-5xl font-black tracking-wider text-white glow-text uppercase leading-tight">
+        Surpass Your Limits.
+      </h1>
+      <p class="font-cinzel text-xs sm:text-sm tracking-[0.3em] uppercase text-mana font-bold mt-1">
+        Right Here, Right Now.
+      </p>
+
+      <!-- Interactive Quote Rotator -->
+      <div onclick="nextQuote()" class="mt-3.5 cursor-pointer group inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/50 hover:bg-white/[0.07] border border-white/10 transition-all" title="Click for next Black Clover quote">
+        <i class="fa-solid fa-quote-left text-xs text-mana opacity-80"></i>
+        <p id="quoteText" class="text-xs sm:text-sm italic text-slate-200 font-medium">
+          "My magic is never giving up!"
+        </p>
+        <span id="quoteAuthor" class="text-xs font-cinzel font-bold text-amber-400">
+          — Asta
+        </span>
+        <i class="fa-solid fa-rotate text-[11px] text-slate-400 group-hover:rotate-180 transition-transform duration-300 ml-1"></i>
+      </div>
+    </section>
+
+    <!-- SLEEK GLASSMORPHIC SEARCH BAR -->
+    <section class="w-full max-w-2xl mb-8">
+      <!-- Search Engine Toggle Pills -->
+      <div class="flex items-center justify-center sm:justify-start gap-2 mb-2.5 px-1 flex-wrap">
+        <button type="button" onclick="setSearchEngine('google')" id="engine-google" class="engine-pill px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all">
+          <i class="fa-brands fa-google"></i> Google <span class="text-[10px] opacity-60 font-mono-code">[Alt+1]</span>
+        </button>
+        <button type="button" onclick="setSearchEngine('youtube')" id="engine-youtube" class="engine-pill px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all">
+          <i class="fa-brands fa-youtube"></i> YouTube <span class="text-[10px] opacity-60 font-mono-code">[Alt+2]</span>
+        </button>
+        <button type="button" onclick="setSearchEngine('github')" id="engine-github" class="engine-pill px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all">
+          <i class="fa-brands fa-github"></i> GitHub <span class="text-[10px] opacity-60 font-mono-code">[Alt+3]</span>
+        </button>
+        <button type="button" onclick="setSearchEngine('duckduckgo')" id="engine-duckduckgo" class="engine-pill px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 border transition-all">
+          <i class="fa-solid fa-shield-halved"></i> DuckDuckGo <span class="text-[10px] opacity-60 font-mono-code">[Alt+4]</span>
+        </button>
+      </div>
+
+      <!-- Search Input Box -->
+      <form id="searchForm" onsubmit="handleSearch(event)" class="search-grimoire rounded-2xl flex items-center px-4 py-3 sm:py-3.5 gap-3">
+        <i id="searchIcon" class="fa-brands fa-google text-lg text-mana w-6 text-center"></i>
+        <input
+          type="text"
+          id="searchInput"
+          autocomplete="off"
+          autofocus
+          placeholder="Cast a spell or search Google... (Press '/' to focus)"
+          class="w-full bg-transparent text-slate-100 placeholder-slate-400 text-sm sm:text-base focus:outline-none select-text"
+        />
+        <button type="submit" class="px-4 py-1.5 rounded-xl bg-mana hover:opacity-90 text-white font-cinzel font-bold text-xs tracking-wider uppercase transition-all shadow-lg shrink-0">
+          Cast
+        </button>
+      </form>
+    </section>
+
+    <!-- CATEGORIZED GLASSMORPHIC DAILY URLS GRID -->
+    <section id="categoriesGrid" class="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+      <!-- Dynamically populated by JavaScript -->
+    </section>
+
+  </main>
+
+  <!-- FOOTER BAR -->
+  <footer class="relative z-10 w-full max-w-7xl mx-auto pt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2 border-t border-white/5">
+    <div class="flex items-center gap-2">
+      <span class="font-cinzel text-amber-400/90 font-semibold">Clover Kingdom Arcane Terminal</span>
+      <span>•</span>
+      <span>Move cursor for Anti-Magic Slash • Click Five-Leaf Emblem for Mana Burst</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <button onclick="openModal('editModal')" class="hover:text-white transition-colors underline underline-offset-4">
+        + Add Custom Link
+      </button>
+      <button onclick="resetToDefaults()" class="hover:text-rose-400 transition-colors">
+        Reset Defaults
+      </button>
+    </div>
+  </footer>
+
+  <!-- ==========================================
+       MODAL 1: EDIT GRIMOIRE LINKS (+ ADD / DELETE)
+       ========================================== -->
+  <div id="editModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="grimoire-card w-full max-w-2xl rounded-2xl p-6 max-h-[88vh] flex flex-col border border-white/20">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-book-journal-whills text-xl text-mana"></i>
+          <h2 class="font-cinzel text-lg sm:text-xl font-bold text-white tracking-wide">Grimoire Spellbook Editor</h2>
+        </div>
+        <button onclick="closeModal('editModal')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-slate-300">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Add New Link Form -->
+      <form onsubmit="handleAddLink(event)" class="mt-4 grid grid-cols-1 sm:grid-cols-12 gap-3 bg-black/40 p-4 rounded-xl border border-white/10">
+        <div class="sm:col-span-4">
+          <label class="block text-[11px] font-mono-code uppercase text-slate-400 mb-1">Category</label>
+          <select id="newLinkCategory" required class="w-full bg-slate-900/90 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:border-mana focus:outline-none">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="sm:col-span-3">
+          <label class="block text-[11px] font-mono-code uppercase text-slate-400 mb-1">Name</label>
+          <input type="text" id="newLinkTitle" required placeholder="e.g. GitHub" class="w-full bg-slate-900/90 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:border-mana focus:outline-none select-text" />
+        </div>
+        <div class="sm:col-span-3">
+          <label class="block text-[11px] font-mono-code uppercase text-slate-400 mb-1">URL</label>
+          <input type="text" id="newLinkUrl" required placeholder="https://github.com" class="w-full bg-slate-900/90 border border-white/15 rounded-lg px-3 py-2 text-xs text-white focus:border-mana focus:outline-none select-text" />
+        </div>
+        <div class="sm:col-span-2 flex items-end">
+          <button type="submit" class="w-full py-2 px-3 rounded-lg bg-mana hover:opacity-90 text-white font-bold text-xs uppercase tracking-wider transition-all">
+            + Inscribe
+          </button>
+        </div>
+      </form>
+
+      <!-- Existing Links List -->
+      <div id="editorLinksList" class="mt-4 overflow-y-auto space-y-3 pr-1 flex-1">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-white/10 flex items-center justify-between">
+        <button type="button" onclick="resetToDefaults()" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+        </button>
+        <button type="button" onclick="closeModal('editModal')" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: CHROME NEW TAB SETUP & DOWNLOAD
+       ========================================== -->
+  <div id="setupModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="grimoire-card w-full max-w-xl rounded-2xl p-6 border border-white/20">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-wand-magic-sparkles text-xl text-amber-400"></i>
+          <h2 class="font-cinzel text-lg sm:text-xl font-bold text-white">Equip as Chrome New Tab Page</h2>
+        </div>
+        <button onclick="closeModal('setupModal')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-slate-300">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <div class="p-3.5 rounded-xl bg-black/50 border border-amber-500/30 flex items-center justify-between gap-4">
+          <div>
+            <p class="font-semibold text-white">Step 1: Export Self-Contained File</p>
+            <p class="text-xs text-slate-400">Save this standalone <code class="text-amber-300">index.html</code> file to a permanent folder on your computer.</p>
+          </div>
+          <button onclick="downloadStartpageHTML()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shrink-0 flex items-center gap-2 shadow-lg transition-all">
+            <i class="fa-solid fa-download"></i> Download index.html
+          </button>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-2">
+          <p class="font-semibold text-white">Step 2: Set as Your Chrome New Tab</p>
+          <ol class="list-decimal list-inside space-y-1.5 text-xs text-slate-300">
+            <li>Double-click your downloaded <code class="text-mana">index.html</code> to open it in Chrome and copy its address bar path (starts with <code class="text-amber-300">file:///...</code>).</li>
+            <li>Install the free <strong>Custom New Tab URL</strong> extension from the Chrome Web Store.</li>
+            <li>Paste your local <code class="text-amber-300">file:///</code> URL into the extension options and click Save.</li>
+            <li>Alternatively, add it under <code class="text-mana">chrome://settings/onStartup</code> &rarr; <em>Open a specific page or set of pages</em>.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="pt-4 mt-4 border-t border-white/10 flex justify-end">
+        <button onclick="closeModal('setupModal')" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">
+          Close Guide
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 pointer-events-none opacity-0 translate-y-3 transition-all duration-300 bg-black/90 border border-mana px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs text-white">
+    <i class="fa-solid fa-fire text-mana"></i>
+    <span id="toastMsg">Mana Updated!</span>
+  </div>
+
+  <!-- ==========================================
+       APPLICATION & CANVAS ANIMATION SCRIPT
+       ========================================== -->
+  <script>
+    /**************************************************************
+     * 1. DEFAULT GRIMOIRE DATA & STATE MANAGEMENT
+     **************************************************************/
+    const STORAGE_KEY_LINKS = 'bc_fiveleaf_grimoire_links_v2';
+    const STORAGE_KEY_THEME = 'bc_fiveleaf_grimoire_theme_v2';
+
+    const DEFAULT_CATEGORIES = [
+      {
+        id: 'black-bulls',
+        title: 'Black Bulls Base',
+        subtitle: 'Daily, Social & Media',
+        icon: 'fa-solid fa-skull-crossbones',
+        links: [
+          { title: 'YouTube', url: 'https://www.youtube.com', icon: 'fa-brands fa-youtube' },
+          { title: 'Gmail', url: 'https://mail.google.com', icon: 'fa-solid fa-envelope' },
+          { title: 'Reddit', url: 'https://www.reddit.com', icon: 'fa-brands fa-reddit-alien' },
+          { title: 'Discord', url: 'https://discord.com/app', icon: 'fa-brands fa-discord' }
+        ]
+      },
+      {
+        id: 'arcane-code',
+        title: 'Arcane Code',
+        subtitle: 'Dev & Competitive CS',
+        icon: 'fa-solid fa-terminal',
+        links: [
+          { title: 'GitHub', url: 'https://github.com', icon: 'fa-brands fa-github' },
+          { title: 'LeetCode', url: 'https://leetcode.com/problemset/', icon: 'fa-solid fa-code' },
+          { title: 'Codeforces', url: 'https://codeforces.com', icon: 'fa-solid fa-chart-simple' },
+          { title: 'Stack Overflow', url: 'https://stackoverflow.com', icon: 'fa-brands fa-stack-overflow' }
+        ]
+      },
+      {
+        id: 'royal-academy',
+        title: 'Royal Academy',
+        subtitle: 'University & Learning',
+        icon: 'fa-solid fa-graduation-cap',
+        links: [
+          { title: 'Google Drive', url: 'https://drive.google.com', icon: 'fa-brands fa-google-drive' },
+          { title: 'Google Docs', url: 'https://docs.google.com', icon: 'fa-solid fa-file-lines' },
+          { title: 'UAP Portal', url: 'https://uap-bd.edu', icon: 'fa-solid fa-building-columns' },
+          { title: 'ChatGPT / Claude', url: 'https://chatgpt.com', icon: 'fa-solid fa-wand-sparkles' }
+        ]
+      },
+      {
+        id: 'hardware-forge',
+        title: 'Hardware Forge',
+        subtitle: 'Robotics & Embedded',
+        icon: 'fa-solid fa-microchip',
+        links: [
+          { title: 'ESP32 Docs', url: 'https://docs.espressif.com', icon: 'fa-solid fa-wifi' },
+          { title: 'Arduino Cloud', url: 'https://app.arduino.cc', icon: 'fa-solid fa-infinity' },
+          { title: 'EasyEDA', url: 'https://easyeda.com', icon: 'fa-solid fa-bolt' },
+          { title: 'Star Tech', url: 'https://www.startech.com.bd', icon: 'fa-solid fa-screwdriver-wrench' }
+        ]
+      }
+    ];
+
+    const BLACK_CLOVER_QUOTES = [
+      { text: "My magic is never giving up!", author: "Asta" },
+      { text: "Surpass your limits. Right here, right now.", author: "Yami Sukehiro" },
+      { text: "Within a fifth leaf resides a devil.", author: "Five-Leaf Grimoire" },
+      { text: "Being weak is nothing to be ashamed of... Staying weak is!", author: "Fuegoleon Vermillion" },
+      { text: "I'm going to be the Wizard King! That's something I'll never give up on!", author: "Asta & Yuno" }
+    ];
+
+    const SEARCH_ENGINES = {
+      google: {
+        name: 'Google',
+        url: 'https://www.google.com/search?q=',
+        icon: 'fa-brands fa-google',
+        placeholder: "Cast a spell or search Google... (Press '/' to focus)"
+      },
+      youtube: {
+        name: 'YouTube',
+        url: 'https://www.youtube.com/results?search_query=',
+        icon: 'fa-brands fa-youtube',
+        placeholder: 'Search YouTube tutorials, anime OSTs, or lectures...'
+      },
+      github: {
+        name: 'GitHub',
+        url: 'https://github.com/search?q=',
+        icon: 'fa-brands fa-github',
+        placeholder: 'Search GitHub repositories, code, or issues...'
+      },
+      duckduckgo: {
+        name: 'DuckDuckGo',
+        url: 'https://duckduckgo.com/?q=',
+        icon: 'fa-solid fa-shield-halved',
+        placeholder: 'Search privately with DuckDuckGo...'
+      }
+    };
+
+    const THEME_PALETTES = {
+      asta: {
+        primary: '#e11d48',
+        bright: '#ff003c',
+        secondary: '#f59e0b',
+        coreDark: '#0a0407',
+        particleColors: ['#ff003c', '#e11d48', '#111111', '#fb7185', '#f59e0b'],
+        badge: '// [ANTI-MAGIC]',
+        name: "Asta's Anti-Magic Mode"
+      },
+      yuno: {
+        primary: '#10b981',
+        bright: '#34d399',
+        secondary: '#fbbf24',
+        coreDark: '#030d09',
+        particleColors: ['#10b981', '#34d399', '#fbbf24', '#a7f3d0', '#059669'],
+        badge: '// [SPIRIT DIVE]',
+        name: "Yuno's Spirit Dive Mode"
+      },
+      yami: {
+        primary: '#9333ea',
+        bright: '#c084fc',
+        secondary: '#e2e8f0',
+        coreDark: '#06030c',
+        particleColors: ['#9333ea', '#c084fc', '#1e1b4b', '#e2e8f0', '#a855f7'],
+        badge: '// [DARK MAGIC]',
+        name: "Yami's Dark Magic Mode"
+      }
+    };
+
+    let categoriesData = [];
+    let currentEngine = 'google';
+    let quoteIndex = 0;
+    let currentTheme = 'asta';
+
+    /**************************************************************
+     * 2. INITIALIZATION & LOCALSTORAGE LOAD
+     **************************************************************/
+    function initApp() {
+      closeModal('setupModal');
+      closeModal('editModal');
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_LINKS);
+        categoriesData = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+      } catch (e) {
+        categoriesData = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+      }
+
+      const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'asta';
+      setManaTheme(savedTheme, false);
+
+      renderCategoriesGrid();
+      setSearchEngine('google');
+
+      // Keyboard Shortcuts ('/' to focus search, Alt+1..4 for engines, Esc for modals)
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
+          e.preventDefault();
+          document.getElementById('searchInput').focus();
+        }
+        if (e.altKey && e.key === '1') setSearchEngine('google');
+        if (e.altKey && e.key === '2') setSearchEngine('youtube');
+        if (e.altKey && e.key === '3') setSearchEngine('github');
+        if (e.altKey && e.key === '4') setSearchEngine('duckduckgo');
+        if (e.key === 'Escape') {
+          closeModal('editModal');
+          closeModal('setupModal');
+        }
+      });
+    }
+
+    function saveLinksToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY_LINKS, JSON.stringify(categoriesData));
+      } catch (e) {
+        console.error('Storage save error:', e);
+      }
+    }
+
+    /**************************************************************
+     * 3. RENDER CATEGORIZED GLASSMORPHIC GRID
+     **************************************************************/
+    function getFaviconUrl(url) {
+      try {
+        const domain = new URL(url).hostname;
+        return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+      } catch {
+        return '';
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderCategoriesGrid() {
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = '';
+
+      categoriesData.forEach((cat) => {
+        const card = document.createElement('div');
+        card.className = 'grimoire-card rounded-2xl p-5 flex flex-col justify-between';
+
+        const linksHtml = cat.links.map((link) => {
+          const fav = getFaviconUrl(link.url);
+          return `
+            <a href="${escapeHtml(link.url)}" class="link-item rounded-xl px-3.5 py-2.5 flex items-center justify-between group">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-lg bg-black/50 border border-white/10 flex items-center justify-center shrink-0 group-hover:border-mana transition-colors">
+                  ${
+                    link.icon
+                      ? `<i class="${escapeHtml(link.icon)} text-sm text-mana"></i>`
+                      : `<img src="${fav}" alt="" class="w-4 h-4 rounded-sm" onerror="this.outerHTML='<i class=\\'fa-solid fa-link text-xs text-mana\\'></i>'" />`
+                  }
+                </div>
+                <span class="text-sm font-medium text-slate-200 group-hover:text-white truncate transition-colors">
+                  ${escapeHtml(link.title)}
+                </span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[11px] text-slate-500 group-hover:text-mana opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0.5"></i>
+            </a>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div>
+            <!-- Category Header -->
+            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-white/10">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-mana shadow-inner">
+                  <i class="${escapeHtml(cat.icon)} text-base"></i>
+                </div>
+                <div>
+                  <h2 class="font-cinzel font-bold text-sm sm:text-base text-white tracking-wide leading-tight">
+                    ${escapeHtml(cat.title)}
+                  </h2>
+                  <p class="text-[11px] font-mono-code text-slate-400">${escapeHtml(cat.subtitle)}</p>
+                </div>
+              </div>
+              <span class="text-[11px] font-mono-code px-2 py-0.5 rounded-md bg-white/5 text-slate-400 border border-white/5">
+                ${cat.links.length}
+              </span>
+            </div>
+
+            <!-- Links Stack -->
+            <div class="space-y-2">
+              ${linksHtml}
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function nextQuote() {
+      quoteIndex = (quoteIndex + 1) % BLACK_CLOVER_QUOTES.length;
+      const q = BLACK_CLOVER_QUOTES[quoteIndex];
+      document.getElementById('quoteText').textContent = `"${q.text}"`;
+      document.getElementById('quoteAuthor').textContent = `— ${q.author}`;
+    }
+
+    /**************************************************************
+     * 4. MULTI-ENGINE SEARCH BAR
+     **************************************************************/
+    function setSearchEngine(engineKey) {
+      if (!SEARCH_ENGINES[engineKey]) return;
+      currentEngine = engineKey;
+      const cfg = SEARCH_ENGINES[engineKey];
+
+      document.getElementById('searchIcon').className = `${cfg.icon} text-lg text-mana w-6 text-center`;
+      document.getElementById('searchInput').placeholder = cfg.placeholder;
+
+      Object.keys(SEARCH_ENGINES).forEach((key) => {
+        const btn = document.getElementById(`engine-${key}`);
+        if (key === engineKey) {
+          btn.className = 'engine-pill px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-mana bg-white/10 text-white shadow-sm transition-all';
+        } else {
+          btn.className = 'engine-pill px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-white/10 bg-black/40 text-slate-400 hover:text-white transition-all';
+        }
+      });
+    }
+
+    function handleSearch(e) {
+      e.preventDefault();
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) return;
+
+      if (/^(https?:\/\/)/i.test(query)) {
+        window.location.href = query;
+        return;
+      }
+
+      const targetUrl = SEARCH_ENGINES[currentEngine].url + encodeURIComponent(query);
+      window.location.href = targetUrl;
+    }
+
+    /**************************************************************
+     * 5. MANA THEME SWITCHER (ASTA / YUNO / YAMI)
+     **************************************************************/
+    function setManaTheme(themeKey, notify = true) {
+      if (!THEME_PALETTES[themeKey]) return;
+      currentTheme = themeKey;
+      document.documentElement.setAttribute('data-theme', themeKey);
+      localStorage.setItem(STORAGE_KEY_THEME, themeKey);
+
+      const badgeEl = document.getElementById('activeThemeLabel');
+      if (badgeEl) badgeEl.textContent = THEME_PALETTES[themeKey].badge;
+
+      ['asta', 'yuno', 'yami'].forEach((k) => {
+        const btn = document.getElementById(`themeBtn-${k}`);
+        if (!btn) return;
+        if (k === themeKey) {
+          btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-white/15 text-white border border-mana shadow';
+        } else {
+          btn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white';
+        }
+      });
+
+      triggerManaBurst(false);
+      if (notify) showToast(`Activated ${THEME_PALETTES[themeKey].name}`);
+    }
+
+    /**************************************************************
+     * 6. MODAL & GRIMOIRE EDITOR LOGIC
+     **************************************************************/
+    function openModal(id) {
+      if (id === 'editModal') populateEditorModal();
+      const modal = document.getElementById(id);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function populateEditorModal() {
+      const select = document.getElementById('newLinkCategory');
+      select.innerHTML = categoriesData.map((c, idx) =>
+        `<option value="${idx}">${escapeHtml(c.title)} (${escapeHtml(c.subtitle)})</option>`
+      ).join('');
+
+      const listContainer = document.getElementById('editorLinksList');
+      listContainer.innerHTML = categoriesData.map((cat, cIdx) => `
+        <div class="bg-black/40 rounded-xl p-3.5 border border-white/10">
+          <h3 class="font-cinzel text-xs font-bold uppercase tracking-wider text-mana mb-2 flex items-center gap-2">
+            <i class="${escapeHtml(cat.icon)}"></i> ${escapeHtml(cat.title)}
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${cat.links.map((link, lIdx) => `
+              <div class="flex items-center justify-between bg-white/[0.03] px-3 py-1.5 rounded-lg border border-white/5 text-xs">
+                <div class="truncate pr-2">
+                  <span class="font-medium text-white">${escapeHtml(link.title)}</span>
+                  <span class="block text-[10px] text-slate-400 truncate">${escapeHtml(link.url)}</span>
+                </div>
+                <button onclick="deleteLink(${cIdx}, ${lIdx})" class="text-slate-400 hover:text-rose-400 p-1 transition-colors" title="Delete Link">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handleAddLink(e) {
+      e.preventDefault();
+      const cIdx = parseInt(document.getElementById('newLinkCategory').value, 10);
+      const title = document.getElementById('newLinkTitle').value.trim();
+      let url = document.getElementById('newLinkUrl').value.trim();
+
+      if (!title || !url) return;
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+
+      categoriesData[cIdx].links.push({
+        title,
+        url,
+        icon: ''
+      });
+
+      saveLinksToStorage();
+      renderCategoriesGrid();
+      populateEditorModal();
+
+      document.getElementById('newLinkTitle').value = '';
+      document.getElementById('newLinkUrl').value = '';
+      showToast(`Inscribed "${title}" into your Grimoire!`);
+    }
+
+    function deleteLink(cIdx, lIdx) {
+      const removed = categoriesData[cIdx].links.splice(lIdx, 1);
+      saveLinksToStorage();
+      renderCategoriesGrid();
+      populateEditorModal();
+      if (removed[0]) showToast(`Removed "${removed[0].title}"`);
+    }
+
+    function resetToDefaults() {
+      categoriesData = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+      saveLinksToStorage();
+      renderCategoriesGrid();
+      populateEditorModal();
+      showToast('Grimoire restored to default spells!');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-3');
+      }, 2600);
+    }
+
+    function downloadStartpageHTML() {
+      closeModal('setupModal');
+      closeModal('editModal');
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Downloaded index.html!');
+    }
+
+    /**************************************************************
+     * 7. HTML5 CANVAS: FIVE-LEAF ARCANE ARRAY, SPARKS, RUNES & SLASH
+     **************************************************************/
+    const canvas = document.getElementById('manaCanvas');
+    const ctx = canvas.getContext('2d');
+    let cw = window.innerWidth;
+    let ch = window.innerHeight;
+
+    const RUNES = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛞ', 'ᛟ'];
+    const particles = [];
+    const trailPoints = [];
+    const shockwaves = [];
+    let sealRotation = 0;
+
+    function resizeCanvas() {
+      cw = window.innerWidth;
+      ch = window.innerHeight;
+      canvas.width = cw;
+      canvas.height = ch;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class ManaParticle {
+      constructor() {
+        this.reset(true);
+      }
+
+      reset(initial = false) {
+        const palette = THEME_PALETTES[currentTheme].particleColors;
+        this.x = Math.random() * cw;
+        this.y = initial ? Math.random() * ch : ch + 20;
+        this.size = Math.random() * 3.2 + 1.2;
+        this.speedY = -(Math.random() * 1.4 + 0.35);
+        this.speedX = (Math.random() - 0.5) * 0.7;
+        this.color = palette[Math.floor(Math.random() * palette.length)];
+        this.alpha = Math.random() * 0.75 + 0.2;
+        this.isRune = Math.random() < 0.16;
+        this.runeChar = RUNES[Math.floor(Math.random() * RUNES.length)];
+        this.angle = Math.random() * Math.PI * 2;
+        this.spin = (Math.random() - 0.5) * 0.02;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX + Math.sin(this.y * 0.015) * 0.25;
+        this.angle += this.spin;
+
+        if (this.y < -30 || this.x < -30 || this.x > cw + 30) {
+          this.reset(false);
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        if (this.isRune) {
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.angle);
+          ctx.font = `${Math.floor(this.size * 4.5)}px "Cinzel", serif`;
+          ctx.fillStyle = this.color;
+          ctx.shadowColor = THEME_PALETTES[currentTheme].bright;
+          ctx.shadowBlur = 10;
+          ctx.fillText(this.runeChar, 0, 0);
+        } else {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.shadowColor = THEME_PALETTES[currentTheme].bright;
+          ctx.shadowBlur = 12;
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    // Populate Particles
+    for (let i = 0; i < 95; i++) {
+      particles.push(new ManaParticle());
+    }
+
+    // Track Cursor for Anti-Magic Slash Trail
+    window.addEventListener('mousemove', (e) => {
+      trailPoints.push({
+        x: e.clientX,
+        y: e.clientY,
+        life: 1.0
+      });
+      if (trailPoints.length > 28) {
+        trailPoints.shift();
+      }
+    });
+
+    function triggerManaBurst(showNotification = false) {
+      const palette = THEME_PALETTES[currentTheme].particleColors;
+      particles.forEach((p) => {
+        p.color = palette[Math.floor(Math.random() * palette.length)];
+        p.speedY = -(Math.random() * 3.6 + 1.2);
+      });
+
+      shockwaves.push({
+        x: cw * 0.5,
+        y: ch * 0.22,
+        radius: 18,
+        maxRadius: Math.max(cw, ch) * 0.65,
+        alpha: 0.9
+      });
+
+      if (showNotification) {
+        showToast('Five-Leaf Grimoire Mana Burst Unleashed!');
+      }
+    }
+
+    function drawShockwaves() {
+      const pal = THEME_PALETTES[currentTheme];
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.radius += 16;
+        sw.alpha -= 0.022;
+
+        if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
+          shockwaves.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = pal.bright;
+        ctx.lineWidth = 3;
+        ctx.globalAlpha = sw.alpha;
+        ctx.shadowColor = pal.bright;
+        ctx.shadowBlur = 20;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    function drawSacredCloverSeal(cx, cy, radius) {
+      const pal = THEME_PALETTES[currentTheme];
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      // Outer Rotating Arcane Ring
+      ctx.save();
+      ctx.rotate(sealRotation);
+      ctx.strokeStyle = pal.bright;
+      ctx.globalAlpha = 0.14;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Inner Dashed Ring
+      ctx.setLineDash([12, 8]);
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.86, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Sacred Pentagram Geometry
+      ctx.strokeStyle = pal.secondary;
+      ctx.globalAlpha = 0.1;
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const a1 = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+        const a2 = (((i + 2) % 5) * 2 * Math.PI) / 5 - Math.PI / 2;
+        ctx.moveTo(Math.cos(a1) * radius * 0.82, Math.sin(a1) * radius * 0.82);
+        ctx.lineTo(Math.cos(a2) * radius * 0.82, Math.sin(a2) * radius * 0.82);
+      }
+      ctx.stroke();
+
+      // Five Clover Petal Arcs in the Magic Array
+      ctx.strokeStyle = pal.bright;
+      ctx.globalAlpha = 0.15;
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        ctx.save();
+        ctx.rotate((i * 2 * Math.PI) / 5);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-radius * 0.28, -radius * 0.35, -radius * 0.18, -radius * 0.72, 0, -radius * 0.58);
+        ctx.bezierCurveTo(radius * 0.18, -radius * 0.72, radius * 0.28, -radius * 0.35, 0, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.restore();
+
+      // Counter-Rotating Ancient Rune Ring
+      ctx.save();
+      ctx.rotate(-sealRotation * 0.75);
+      ctx.fillStyle = pal.secondary;
+      ctx.globalAlpha = 0.16;
+      ctx.font = '14px "Cinzel", serif';
+      const runeCount = 12;
+      for (let i = 0; i < runeCount; i++) {
+        const angle = (i * 2 * Math.PI) / runeCount;
+        const rx = Math.cos(angle) * (radius * 0.93);
+        const ry = Math.sin(angle) * (radius * 0.93);
+        ctx.fillText(RUNES[i % RUNES.length], rx - 5, ry + 5);
+      }
+      ctx.restore();
+
+      ctx.restore();
+    }
+
+    function drawCursorSlashTrail() {
+      if (trailPoints.length < 2) return;
+      const pal = THEME_PALETTES[currentTheme];
+
+      ctx.save();
+      for (let i = 1; i < trailPoints.length; i++) {
+        const p0 = trailPoints[i - 1];
+        const p1 = trailPoints[i];
+        p1.life -= 0.045;
+
+        if (p1.life <= 0) continue;
+
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.strokeStyle = pal.bright;
+        ctx.lineWidth = p1.life * 5.5;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = pal.bright;
+        ctx.shadowBlur = 14;
+        ctx.globalAlpha = p1.life * 0.7;
+        ctx.stroke();
+
+        // Obsidian Anti-Magic Core Line
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.lineTo(p1.x, p1.y);
+        ctx.strokeStyle = '#050408';
+        ctx.lineWidth = p1.life * 2.2;
+        ctx.globalAlpha = p1.life * 0.9;
+        ctx.stroke();
+      }
+
+      while (trailPoints.length > 0 && trailPoints[0].life <= 0) {
+        trailPoints.shift();
+      }
+      ctx.restore();
+    }
+
+    function animateCanvas() {
+      ctx.clearRect(0, 0, cw, ch);
+
+      const pal = THEME_PALETTES[currentTheme];
+      const grad = ctx.createRadialGradient(cw * 0.5, ch * 0.34, 10, cw * 0.5, ch * 0.4, Math.max(cw, ch) * 0.7);
+      grad.addColorStop(0, pal.primary + '22');
+      grad.addColorStop(0.5, pal.coreDark);
+      grad.addColorStop(1, '#040307');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, cw, ch);
+
+      // Rotate & Draw Sacred Five-Leaf Clover Seal
+      sealRotation += 0.0025;
+      const sealRadius = Math.min(cw, ch) * 0.37;
+      drawSacredCloverSeal(cw * 0.5, ch * 0.42, sealRadius);
+
+      // Draw Expanding Mana Burst Shockwaves
+      drawShockwaves();
+
+      // Update & Draw Rising Mana Sparks & Floating Runes
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+      }
+
+      // Draw Interactive Anti-Magic Cursor Slash Trail
+      drawCursorSlashTrail();
+
+      requestAnimationFrame(animateCanvas);
+    }
+
+    window.onload = function () {
+      initApp();
+      animateCanvas();
+    };
+  </script>
+</body>
+</html>
